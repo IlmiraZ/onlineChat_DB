@@ -7,7 +7,7 @@ public class BaseAuthService implements AuthService {
 
     private Connection connection;
     private Statement statement;
-    PreparedStatement preparedStatement;
+    private PreparedStatement preparedStatement;
 
     @Override
     public void connect() throws SQLException {
