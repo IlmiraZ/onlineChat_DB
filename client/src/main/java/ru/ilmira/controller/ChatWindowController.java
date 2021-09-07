@@ -189,12 +189,15 @@ public class ChatWindowController {
         TextInputDialog inputDialog = new TextInputDialog("");
         inputDialog.setTitle("Новый никнейм");
         inputDialog.setHeaderText("Введите новый никнейм");
-        Optional<String> result = inputDialog.showAndWait();
-        if (result.isPresent() && !result.get().trim().equals("")) {
-            sendMessage("/newnickname " + result.get().trim());
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText(result.get().trim());
-            alert.showAndWait();
-        }
+        inputDialog.showAndWait()
+                .map(nick -> nick.trim())
+                .filter(nick -> !"".equals(nick))
+                .map(nick -> {
+                    sendMessage("/newnickname " +nick);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setContentText(nick);
+                    return alert;
+                })
+                .ifPresent(alert -> alert.showAndWait());
     }
 }
