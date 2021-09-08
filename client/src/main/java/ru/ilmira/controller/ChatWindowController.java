@@ -18,13 +18,11 @@ import ru.ilmira.ChatConnection;
 import ru.ilmira.ClientApp;
 import ru.ilmira.UserProperties;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 
 public class ChatWindowController {
     @FXML
@@ -43,12 +41,16 @@ public class ChatWindowController {
     private DataInputStream in;
     private DataOutputStream out;
 
+    private String logFileName;
+    private FileWriter file;
+
     @FXML
     private void sendMessage(ActionEvent event) {
         inputTF.requestFocus();
         if (inputTF.getText().isEmpty()) return;
         sendMessage(inputTF.getText());
         messageTA.appendText(inputTF.getText() + "\n");
+        writeFile(UserProperties.nickName + ": " + inputTF.getText());
         inputTF.clear();
     }
 
@@ -71,7 +73,26 @@ public class ChatWindowController {
             openLoginWindow();
             nickNameLBL.setText(UserProperties.nickName);
             openConnection();
+            logFileName = "history_" + UserProperties.login + ".txt";
+            openLogFile(logFileName);
+            loadHistory(logFileName, 100);
             addCloseListener();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openLogFile(String fileName) {
+        try {
+            file = new FileWriter(fileName,true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeFile(String textMsg) {
+        try {
+            file.write(textMsg + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -82,6 +103,7 @@ public class ChatWindowController {
         EventHandler<WindowEvent> onCloseRequest = ClientApp.primaryStage.getOnCloseRequest();
         ClientApp.primaryStage.setOnCloseRequest(event -> {
             closeConnection();
+            closeFile();
             if (onCloseRequest != null) {
                 onCloseRequest.handle(event);
             }
@@ -121,7 +143,9 @@ public class ChatWindowController {
                             String nickName = msg.split(" ")[1];
                             clientList.add(nickName);
                             clientListLV.setItems(clientList);
-                            messageTA.appendText(nickName + " зашел в чат \n");
+                            String s = nickName + " зашел в чат \n";
+                            messageTA.appendText(s);
+                            writeFile(s);
                         });
                     } else if (msg.startsWith("/clientexit")) {
                         // удаляем клиента, отключившегося от чата
@@ -129,7 +153,9 @@ public class ChatWindowController {
                             String nickName = msg.split(" ")[1];
                             clientList.remove(nickName);
                             clientListLV.setItems(clientList);
-                            messageTA.appendText(nickName + " вышел из чата \n");
+                            String s = nickName + " вышел из чата \n";
+                            messageTA.appendText(s);
+                            writeFile(s);
                         });
                     } else if (msg.startsWith("/newnicknameok")) {
                         Platform.runLater(() -> {
@@ -146,6 +172,7 @@ public class ChatWindowController {
                         });
                     } else {
                         messageTA.appendText(msg + "\n");
+                        writeFile(msg + "\n");
                     }
                 }
             } catch (Exception e) {
@@ -162,6 +189,14 @@ public class ChatWindowController {
                 }
             }
         }).start();
+    }
+
+    private void closeFile() {
+        try {
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void closeConnection() {
@@ -199,5 +234,29 @@ public class ChatWindowController {
                     return alert;
                 })
                 .ifPresent(alert -> alert.showAndWait());
+    }
+
+    private void loadHistory(String fileName, int lineCount) {
+        if (lineCount == 0) return;
+        File file = new File(fileName);
+        StringBuilder builder = new StringBuilder();
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r")) {
+            long pos = file.length();
+            if (pos == 0) return;
+            randomAccessFile.seek(pos);
+
+            int temp = lineCount;
+            for (long i = pos - 1; i >= 0; i--) {
+                randomAccessFile.seek(i);
+                char ch = (char) randomAccessFile.read();
+                if (ch == '\n') temp--;
+                if (temp == 0) break;
+                builder.append(ch);
+            }
+            builder.reverse();
+            messageTA.appendText(new String(builder.toString().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
