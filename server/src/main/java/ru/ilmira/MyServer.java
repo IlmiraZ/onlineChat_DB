@@ -6,19 +6,28 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MyServer {
     private List<ClientHandler> clients;
     private AuthService authService;
 
+    private ExecutorService executorService;
+
     public AuthService getAuthService() {
         return authService;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 
     public MyServer() {
         int PORT = 3344;
         try (ServerSocket server = new ServerSocket(PORT)) {
             authService = new BaseAuthService();
+            executorService = Executors.newCachedThreadPool();
             authService.connect();
 
             clients = new ArrayList<>();
@@ -32,6 +41,7 @@ public class MyServer {
             System.out.println("Ошибка в работе сервера!");
         } finally {
             if (authService != null) {
+                executorService.shutdown();
                 authService.disconnect();
             }
         }

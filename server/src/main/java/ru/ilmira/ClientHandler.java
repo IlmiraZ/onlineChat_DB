@@ -33,7 +33,7 @@ public class ClientHandler {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             this.nickName = "";
-            new Thread(() -> {
+            Runnable runnable = () -> {
                 try {
                     authentication();
                     readMessage();
@@ -42,7 +42,8 @@ public class ClientHandler {
                 } finally {
                     closeConnection();
                 }
-            }).start();
+            };
+            myServer.getExecutorService().execute(runnable);
         } catch (IOException e) {
             throw new RuntimeException("Проблемы при создании обработчика клиента!");
         }
@@ -88,7 +89,7 @@ public class ClientHandler {
         myServer.subscribe(this);
         anonymEntryTime = System.currentTimeMillis();
 
-        new Thread(() -> {
+        Runnable runnable = () -> {
             try {
                 while (true) {
                     if (System.currentTimeMillis() - anonymEntryTime >= SESSION_LIMIT) {
@@ -108,7 +109,8 @@ public class ClientHandler {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        };
+        myServer.getExecutorService().execute(runnable);
     }
 
     public void readMessage() throws IOException {
