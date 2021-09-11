@@ -1,0 +1,28 @@
+nick3: Всем привет!
+nick3: /w nick1 все ок
+nick3 сменил имя на nick4
+
+nick4 сменил имя на nick3
+
+nick3: Какой чудесный день))
+
+nick5 сменил имя на nick3
+
+nick1: ccccc
+
+nick2: ttttt
+
+nick3: uuuuuuu
+nick2 вышел из чата 
+
+nick1 вышел из чата 
+
+nick1: ввввввв
+
+nick3: vvvvvvvv
+nick2: hhhhhhhh
+
+nick2 вышел из чата 
+
+nick1 вышел из чата 
+
