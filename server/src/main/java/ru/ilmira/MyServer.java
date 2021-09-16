@@ -1,14 +1,15 @@
 package ru.ilmira;
 
-import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
+
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@Slf4j
 public class MyServer {
     private List<ClientHandler> clients;
     private AuthService authService;
@@ -32,13 +33,16 @@ public class MyServer {
 
             clients = new ArrayList<>();
             while (true) {
-                System.out.println("Сервер ожидает подключения...");
+                log.info("Сервер ожидает подключения...");
+                // System.out.println("Сервер ожидает подключения...");
                 Socket socket = server.accept();
-                System.out.println("Клиент подключился...");
+                log.info("Клиент подключился...");
+                // System.out.println("Клиент подключился...");
                 new ClientHandler(this, socket);
             }
-        } catch (IOException | SQLException e) {
-            System.out.println("Ошибка в работе сервера!");
+        } catch (Exception e) {
+            log.error("Ошибка в работе сервера!", e);
+            //System.out.println("Ошибка в работе сервера!");
         } finally {
             if (authService != null) {
                 executorService.shutdown();

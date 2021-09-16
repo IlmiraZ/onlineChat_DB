@@ -39,5 +39,12 @@ Anonymous1 вышел из чата
 
 Anonymous2 вышел из чата 
 
+
+
+nick1: иииии
+
+nick2: mmmmm
+nick1: мммм
+
 nick1 вышел из чата 
 

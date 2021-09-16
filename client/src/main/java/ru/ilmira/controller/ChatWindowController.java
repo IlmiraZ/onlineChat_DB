@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import lombok.extern.slf4j.Slf4j;
 import ru.ilmira.ChatConnection;
 import ru.ilmira.ClientApp;
 import ru.ilmira.UserProperties;
@@ -24,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
+@Slf4j
 public class ChatWindowController {
     @FXML
     private Label nickNameLBL;
@@ -58,7 +60,8 @@ public class ChatWindowController {
         try {
             out.writeUTF(s);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("",e);
+           // e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Ошибка отправки сообщения");
             alert.setHeaderText("Ошибка отправки сообщения");
@@ -78,7 +81,8 @@ public class ChatWindowController {
             loadHistory(logFileName, 100);
             addCloseListener();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("",e);
+            //e.printStackTrace();
         }
     }
 
@@ -86,7 +90,8 @@ public class ChatWindowController {
         try {
             file = new FileWriter(fileName,true);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("",e);
+            //e.printStackTrace();
         }
     }
 
@@ -94,7 +99,8 @@ public class ChatWindowController {
         try {
             file.write(textMsg + "\n");
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("",e);
+            //e.printStackTrace();
         }
     }
 
@@ -176,16 +182,19 @@ public class ChatWindowController {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("", e);
+                //e.printStackTrace();
             } finally {
                 try {
+                    log.info("Соединение с сервером разорвано...");
                     messageTA.appendText("Соединение с сервером разорвано...");
                     clientList.clear();
                     in.close();
                     out.close();
                     socket.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("", e);
+                    //e.printStackTrace();
                 }
             }
         }).start();
@@ -195,7 +204,8 @@ public class ChatWindowController {
         try {
             file.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
         }
     }
 
@@ -206,7 +216,8 @@ public class ChatWindowController {
             out.close();
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
         }
     }
 
@@ -256,7 +267,8 @@ public class ChatWindowController {
             builder.reverse();
             messageTA.appendText(new String(builder.toString().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
         }
     }
 }
