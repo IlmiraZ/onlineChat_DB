@@ -31,3 +31,13 @@ nick3: vvvvvvvv
 
 nick2: hhhhhhhh
 nick2: /w nick1 ooooooo
+Anonymous1 зашел в чат 
+
+Anonymous2 зашел в чат 
+
+Anonymous1 вышел из чата 
+
+Anonymous2 вышел из чата 
+
+nick1 вышел из чата 
+
