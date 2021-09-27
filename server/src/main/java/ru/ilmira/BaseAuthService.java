@@ -1,8 +1,10 @@
 package ru.ilmira;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.sql.*;
 
-
+@Slf4j
 public class BaseAuthService implements AuthService {
 
     private Connection connection;
@@ -13,7 +15,8 @@ public class BaseAuthService implements AuthService {
     public void connect() throws SQLException {
         connection = DriverManager.getConnection("jdbc:sqlite:chatOnline.db");
         statement = connection.createStatement();
-        System.out.println("Сервис аутентификации запущен!");
+        log.info("Сервис аутентификации запущен!");
+        // System.out.println("Сервис аутентификации запущен!");
     }
 
     @Override
@@ -22,17 +25,20 @@ public class BaseAuthService implements AuthService {
             try {
                 statement.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error("", e);
+                //e.printStackTrace();
             }
         }
         if (connection != null) {
             try {
                 connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error("", e);
+                //e.printStackTrace();
             }
         }
-        System.out.println("Сервис аутентификации остановлен!");
+        log.info("Сервис аутентификации остановлен!");
+        //System.out.println("Сервис аутентификации остановлен!");
     }
 
     @Override
@@ -47,11 +53,13 @@ public class BaseAuthService implements AuthService {
             if (rs.next()) {
                 return rs.getString("nickname");
             } else {
-                System.out.println("Неправильно введен логин и/или пароль");
+                log.info("Неправильно введен логин и/или пароль");
+                //System.out.println("Неправильно введен логин и/или пароль");
                 return null;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
             return null;
         }
     }
@@ -66,11 +74,13 @@ public class BaseAuthService implements AuthService {
             preparedStatement.setString(2, login);
             int resUpdated = preparedStatement.executeUpdate();
             if (resUpdated == 0) {
-                System.out.println(" Не удалось изменить nickName у пользователя с логином " + login);
+                log.info(" Не удалось изменить nickName у пользователя с логином " + login);
+                //System.out.println(" Не удалось изменить nickName у пользователя с логином " + login);
             }
             return resUpdated > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
         }
         return false;
     }

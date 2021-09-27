@@ -7,6 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 import ru.ilmira.ChatConnection;
 import ru.ilmira.UserProperties;
 
@@ -15,6 +16,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+@Slf4j
 public class AuthWindowController {
     @FXML
     private TextField loginTF;
@@ -31,6 +33,7 @@ public class AuthWindowController {
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
         } catch (IOException e) {
+            log.error("Ошибка подключения!", e);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Ошибка подключения!");
             alert.setHeaderText("Сервер не запущен!");
@@ -59,6 +62,7 @@ public class AuthWindowController {
                         break;
                     } else {
                         Platform.runLater(() -> {
+                            log.warn("Авторизация не удалась!");
                             Alert alert = new Alert(Alert.AlertType.ERROR);
                             alert.setTitle("Ошибка авторизации!");
                             alert.setHeaderText("Авторизация не удалась!");
@@ -68,7 +72,8 @@ public class AuthWindowController {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("", e);
+                //e.printStackTrace();
             }
         }).start();
     }
@@ -86,7 +91,8 @@ public class AuthWindowController {
             out.close();
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
         }
         System.exit(0);
     }

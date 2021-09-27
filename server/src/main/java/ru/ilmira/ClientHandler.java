@@ -1,10 +1,12 @@
 package ru.ilmira;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-
+@Slf4j
 public class ClientHandler {
 
     private final MyServer myServer;
@@ -38,13 +40,15 @@ public class ClientHandler {
                     authentication();
                     readMessage();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("", e);
+                    //e.printStackTrace();
                 } finally {
                     closeConnection();
                 }
             };
             myServer.getExecutorService().execute(runnable);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            log.error("", e);
             throw new RuntimeException("Проблемы при создании обработчика клиента!");
         }
     }
@@ -99,14 +103,16 @@ public class ClientHandler {
                     Thread.sleep(1000);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("", e);
+                //e.printStackTrace();
             } finally {
                 try {
                     in.close();
                     out.close();
                     socket.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("", e);
+                    //e.printStackTrace();
                 }
             }
         };
@@ -116,7 +122,8 @@ public class ClientHandler {
     public void readMessage() throws IOException {
         while (true) {
             String clientMsg = in.readUTF();
-            System.out.println("от " + nickName + ": " + clientMsg);
+            log.info("от " + nickName + ": " + clientMsg);
+            //System.out.println("от " + nickName + ": " + clientMsg);
 
             if (clientMsg.equalsIgnoreCase("/end")) {
                 break;
@@ -145,7 +152,8 @@ public class ClientHandler {
         try {
             out.writeUTF(msg);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
         }
     }
 
@@ -155,17 +163,20 @@ public class ClientHandler {
         try {
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
         }
         try {
             out.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
         }
         try {
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("", e);
+            //e.printStackTrace();
         }
     }
 }
